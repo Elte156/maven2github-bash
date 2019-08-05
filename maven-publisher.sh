@@ -26,9 +26,15 @@ fi
 
 ensureLocalRepo()
 {
+
+    # FIXME: How to handle authenication for HTTPS
+    # FIXME: How to handle authenication for SSH
+
     if [ -d "$TMP_REPO" ]; then
         echo "Pulling latest changed from $REPO into $TMP_REPO"
         pushd "$TMP_REPO"
+        # FIXME: This function fails if the remote repo is completely empty
+        # Remote needs to have a master branch
         git pull
         popd
     else
@@ -41,6 +47,7 @@ generateMavenArtifact()
 {
     echo "Generating artifacts for $GROUP_ID/$ARTIFACT_ID/$VERSION from $FILE into $REPO"
 
+    # FIXME: Need to ensure that the .m2 directory actually exists
     if [ -z "$POM" ]; then
         mvn deploy:deploy-file -DgroupId="$GROUP_ID" -DartifactId="$ARTIFACT_ID" \
             -Dversion="$VERSION" -Dfile="$FILE" -Dpackaging="$PACKAGING" -DgeneratePom=true -DcreateChecksum=true \
@@ -72,6 +79,7 @@ commitAndPushChanges()
 printRepoPath()
 {
     echo "============================"
+    # FIXME: This is not correct if user uses SSH repo instead of HTTPS
     echo "Your Maven Repo URL is $REPO/tree/master/.m2"
     echo "============================"
 }
