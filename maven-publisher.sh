@@ -2,18 +2,27 @@
 
 # GROUP_ID="[YOUR_GROUP_ID]"
 # ARTIFACT_ID="[YOUR_ARTIFACT_ID]"
-# GITHUB_OWNER="[GITHUB_OWNER]"
-# GITHUB_REPO="[GITHUB_REPOSITORY_NAME]"
 # VERSION=[ARTIFACT_VERSION]
 # FILE=[PATH_TO_ARTIFACT]
 # PACKAGING=[aar|jar]
 # POM=[PATH_TO_POM_XML] (optional)
 #
+# TMP_REPO=[LOCAL_REPOSITORY_DIRECTORY]
+# REPO=[REMOTE_REPOSITORY_HTTP]
+#   OR
+# GIT_OWNER="[GIT_OWNER]"
+# GIT_REPO="[GIT_REPOSITORY_NAME]"
+#
 # Leave POM empty to use default.
 # You can use POM to describe dependencies of your artifact.
 
-TMP_REPO="$HOME/.git2m2/$GITHUB_OWNER/$GITHUB_REPO"
-REPO="https://github.com/$GITHUB_OWNER/$GITHUB_REPO"
+if [ -z "$TMP_REPO" ]; then
+    TMP_REPO="$HOME/.git2m2/$GIT_OWNER/$GIT_REPO"
+fi
+
+if [ -z "$REPO" ]; then
+    REPO="https://github.com/$GIT_OWNER/$GIT_REPO"
+fi
 
 ensureLocalRepo()
 {
@@ -35,13 +44,13 @@ generateMavenArtifact()
     if [ -z "$POM" ]; then
         mvn deploy:deploy-file -DgroupId="$GROUP_ID" -DartifactId="$ARTIFACT_ID" \
             -Dversion="$VERSION" -Dfile="$FILE" -Dpackaging="$PACKAGING" -DgeneratePom=true -DcreateChecksum=true \
-            -Durl="file:///$TMP_REPO/.m2" -e
-    else 
+            -Durl="file://$TMP_REPO/.m2" -e
+    else
         echo "Using POM file $POM:"
         cat "$POM"
         mvn deploy:deploy-file -DgroupId="$GROUP_ID" -DartifactId="$ARTIFACT_ID" \
             -Dversion="$VERSION" -Dfile="$FILE" -Dpackaging="$PACKAGING" -DgeneratePom=true -DcreateChecksum=true \
-            -Durl="file:///$TMP_REPO/.m2" -DpomFile="$POM" -e
+            -Durl="file://$TMP_REPO/.m2" -DpomFile="$POM" -e
     fi
     echo "Maven artifact successfully generated"
 }
@@ -51,7 +60,7 @@ commitAndPushChanges()
     pushd "$TMP_REPO"
 
     echo "Adding all changes to git"
-    git add -A 
+    git add -A
     git commit -m "Release $GROUP_ID/$ARTIFACT_ID version $VERSION"
 
     echo "Pushing to $REPO"
@@ -63,7 +72,7 @@ commitAndPushChanges()
 printRepoPath()
 {
     echo "============================"
-    echo "Your Maven URL is https://github.com/$GITHUB_OWNER/$GITHUB_REPO/tree/master/.m2"
+    echo "Your Maven Repo URL is $REPO/tree/master/.m2"
     echo "============================"
 }
 

@@ -1,4 +1,6 @@
-# Maven To Github Bash Script
+# Maven To Git Service Bash Script
+
+**This repo has been forked to be compatible with any git hosting service.**
 
 ## Description
 
@@ -10,16 +12,16 @@ Use simple bash script to create Maven repository on the GitHub. You can save mu
 
 ## Usage
 
-To upload `path-to-jar.jar` to `https://github.com/your-github-account/your-github-repo-name` as artifact `com.example:example:1.0`, follow the example below:
+To upload `path-to-jar.jar` to `https://gitlab.com/elte156/privateMavenRepo` as artifact `com.example:example:1.0.0`, follow the example below:
 
 ```bash
 GROUP_ID=com.example \
 ARTIFACT_ID=example \
-GITHUB_OWNER=your-github-account \
-GITHUB_REPO=your-github-repo-name \
-VERSION=1.0 \
+VERSION=1.0.0 \
 FILE=path-to-jar.jar \
 PACKAGING=jar \
+TMP_REPO=$HOME/.git2m2/elte156/privateMavenRepo \
+REPO=https://gitlab.com/elte156/privateMavenRepo.git \
 bash maven-publisher.sh
 ```
 
